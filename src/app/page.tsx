@@ -258,9 +258,10 @@ export default function Page() {
   };
 
   useEffect(() => {
+    const timers = toastTimers.current;
     return () => {
-      for (const t of toastTimers.current.values()) window.clearTimeout(t);
-      toastTimers.current.clear();
+      for (const t of timers.values()) window.clearTimeout(t);
+      timers.clear();
     };
   }, []);
 
@@ -319,16 +320,10 @@ export default function Page() {
 
   const nextSuggestedId = useMemo(() => computeNextId(items), [items]);
 
-  useEffect(() => {
-    if (!addOpen) return;
-    setAddForm((prev) => ({
-      id: prev.id || nextSuggestedId,
-      brand: prev.brand,
-      model: prev.model,
-      type: prev.type,
-      vendor: prev.vendor,
-    }));
-  }, [addOpen, nextSuggestedId]);
+  const openAdd = () => {
+    setAddForm((prev) => ({ ...prev, id: prev.id || nextSuggestedId }));
+    setAddOpen(true);
+  };
 
   const openEdit = (it: GlassItem) => {
     setEditTarget(it);
@@ -480,7 +475,7 @@ export default function Page() {
               </SecondaryButton>
               <PrimaryButton
                 type="button"
-                onClick={() => setAddOpen(true)}
+                onClick={openAdd}
                 disabled={!canUseApi}
                 leftIcon={<Plus className="h-4 w-4" />}
               >
@@ -523,7 +518,7 @@ export default function Page() {
                 </div>
                 <SecondaryButton
                   type="button"
-                  onClick={() => setAddOpen(true)}
+                  onClick={openAdd}
                   disabled={!canUseApi}
                   leftIcon={<Plus className="h-4 w-4" />}
                   className="sm:hidden"
@@ -561,7 +556,7 @@ export default function Page() {
                 <div className="mt-5 flex justify-center">
                   <PrimaryButton
                     type="button"
-                    onClick={() => setAddOpen(true)}
+                    onClick={openAdd}
                     disabled={!canUseApi}
                     leftIcon={<Plus className="h-4 w-4" />}
                   >
